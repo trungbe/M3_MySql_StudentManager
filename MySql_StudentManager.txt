@@ -1,0 +1,120 @@
+create schema studentManager;
+use studentManager;
+
+create table address
+(
+    address_id int         not null,
+    address    varchar(50) not null,
+    constraint address_pk
+        primary key (address_id)
+);
+
+create table classes
+(
+    class_id    int         not null,
+    name        varchar(50) not null,
+    language    varchar(50) null,
+    constraint `classes _pk`
+        primary key (class_id)
+);
+ALTER TABLE classes add COLUMN description varchar(50) after  language;
+
+create table students
+(
+    id_student int         not null
+        primary key,
+    fullname   varchar(50) not null,
+    address_id int         not null,
+    phone      int unique  null,
+    class_id   int         not null,
+    constraint students_address__fk
+        foreign key (address_id) references address (address_id),
+    constraint students_classes__fk
+        foreign key (class_id) references classes (class_id)
+);
+
+create table course
+(
+    course_id int not null,
+    name_course varchar(50) not null,
+    description varchar(50) null,
+    constraint course_pk
+        primary key (course_id)
+);
+
+create table point
+(
+    point_id int not null,
+    course_id int not null,
+    student_id int not null,
+    point int not null,
+    constraint point_pk
+        primary key (point_id),
+    constraint point_course__fk
+        foreign key (course_id) references course (course_id),
+    constraint point_students__fk
+        foreign key (student_id) references students (id_student)
+);
+
+insert into classes(class_id, name, language, description) VALUE (1,'G1','Java','Good');
+insert into classes(class_id, name, language, description) VALUE (2,'G2','PhP','Good');
+insert into classes(class_id, name, language, description) VALUE (3,'G3','.Net','Good');
+insert into classes(class_id, name, language, description) VALUE (4,'G4','Ruby','Good');
+insert into classes(class_id, name, language, description) VALUE (5,'G5','Python','Good');
+select  * from classes;
+insert into address(address_id, address) VALUE (1,'Hai Phong');
+insert into address(address_id, address) VALUE (2,'Hai Duong');
+insert into address(address_id, address) VALUE (3,'Hai Tu');
+insert into address(address_id, address) VALUE (4,'Hai Quay Xe');
+insert into address(address_id, address) VALUE (5,'Cat Hai ');
+select  * from address;
+insert into course(course_id, name_course, description) VALUE (1,'Full time','ca ngay');
+insert into course(course_id, name_course, description) VALUE (2,'Full time','ca ngay');
+insert into course(course_id, name_course, description) VALUE (3,'Full time','ca ngay');
+insert into course(course_id, name_course, description) VALUE (4,'Part time','nua ngay');
+insert into course(course_id, name_course, description) VALUE (5,'Part time','nua ngay');
+
+insert into students(id_student, fullname, address_id, phone, class_id) value (1,'Nguyen Trung',1,123456,1);
+insert into students(id_student, fullname, address_id, phone, class_id) value (2,'Nguyen Nam',1,1234567,2);
+insert into students(id_student, fullname, address_id, phone, class_id) value (3,'Tran Kien',2,1234568,3);
+insert into students(id_student, fullname, address_id, phone, class_id) value (4,'Hai Banh',2,1234569,4);
+insert into students(id_student, fullname, address_id, phone, class_id) value (5,'Song Long',3,1234560,5);
+insert into students(id_student, fullname, address_id, phone, class_id) value (6,'Kha Banh',3,12345611,1);
+insert into students(id_student, fullname, address_id, phone, class_id) value (7,'Huong Giang',4,1234556,2);
+insert into students(id_student, fullname, address_id, phone, class_id) value (8,'Dung Troc',4,1234526,3);
+insert into students(id_student, fullname, address_id, phone, class_id) value (9,'Phu Le',5,1223456,4);
+insert into students(id_student, fullname, address_id, phone, class_id) value (10,'Dung Ha',5,1263456,5);
+select  * from students;
+insert into point(point_id, course_id, student_id, point) VALUE (1,1,1,5);
+insert into point(point_id, course_id, student_id, point) VALUE (2,2,2,6);
+insert into point(point_id, course_id, student_id, point) VALUE (3,3,3,2);
+insert into point(point_id, course_id, student_id, point) VALUE (4,4,4,1);
+insert into point(point_id, course_id, student_id, point) VALUE (5,5,5,10);
+insert into point(point_id, course_id, student_id, point) VALUE (6,1,6,9);
+insert into point(point_id, course_id, student_id, point) VALUE (7,2,7,8);
+insert into point(point_id, course_id, student_id, point) VALUE (8,3,8,8);
+insert into point(point_id, course_id, student_id, point) VALUE (9,4,9,7);
+insert into point(point_id, course_id, student_id, point) VALUE (10,5,10,3);
+insert into point(point_id, course_id, student_id, point) VALUE (11,1,1,4);
+insert into point(point_id, course_id, student_id, point) VALUE (12,2,2,9);
+insert into point(point_id, course_id, student_id, point) VALUE (13,3,3,5);
+insert into point(point_id, course_id, student_id, point) VALUE (14,4,4,1);
+insert into point(point_id, course_id, student_id, point) VALUE (15,5,5,2);
+select  * from point;
+
+# Thống kê số lượng HV các lớp
+
+select name 'Ten lop', count(name) 'So luong hoc vien cac lop'from classes join students s on classes.class_id = s.class_id group by name;
+
+# Thống kê số lượng học viên tại các tỉnh
+
+select address 'Cac tinh', count(address) 'So luong hoc vien cac tinh' from address join students s on address.address_id = s.address_id group by address ;
+
+# Tính điểm trung bình của các khóa học
+
+select name_course 'Ten khoa hoc', avg(point) 'Diem trung binh' from point join course c on point.course_id = c.course_id group by name_course;
+
+# Đưa ra khóa học có điểm trung bình cao nhất
+
+select name_course 'Ten khoa hoc có Avg cao nhat', avg(point) 'Diem trung binh' from point join course c on point.course_id = c.course_id group by name_course having avg(point) >6 ;
+
